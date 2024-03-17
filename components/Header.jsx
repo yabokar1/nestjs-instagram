@@ -12,6 +12,7 @@ export default function Header() {
             src="http://www.jennexplores.com/wp-content/uploads/2015/09/Instagram_logo_black.png"
             layout="fill"
             className="object-contain"
+            alt=""
           />
         </div>
 
@@ -20,6 +21,7 @@ export default function Header() {
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/800px-Instagram_logo_2016.svg.png"
             layout="fill"
             className="object-contain"
+            alt=""
           />
         </div>
 
