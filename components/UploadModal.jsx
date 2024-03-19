@@ -8,6 +8,7 @@ import {
   collection,
   serverTimestamp,
   updateDoc,
+  doc,
 } from "firebase/firestore";
 import { db, storage } from "../firebase";
 import { useSession } from "next-auth/react";
@@ -33,14 +34,14 @@ export default function UploadModal() {
     });
 
     const imageRef = ref(storage, `posts/${docRef.id}/image`);
-    await uploadString(imageRef, selectedFile, "data_url").then(() => {
+    await uploadString(imageRef, selectedFile, "data_url").then(
       async (snapshot) => {
         const downloadURL = await getDownloadURL(imageRef);
         await updateDoc(doc(db, "posts", docRef.id), {
           image: downloadURL,
         });
-      };
-    });
+      }
+    );
     setOpen(false);
     setLoading(false);
     setSelectedFile(null);
