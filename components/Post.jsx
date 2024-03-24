@@ -15,12 +15,17 @@ import {
   onSnapshot,
   query,
   orderBy,
+  setDoc,
+  doc,
 } from "firebase/firestore";
+import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
 import { db } from "../firebase";
 export default function Post({ img, userImg, caption, username, id }) {
   const { data: session } = useSession();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [likes, setLikes] = useState([]);
+  const [hasLiked, setHasLiked] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -33,6 +38,30 @@ export default function Post({ img, userImg, caption, username, id }) {
       }
     );
   }, [db, id]);
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "posts", id, "likes"),
+      (snapshot) => setLikes(snapshot.docs)
+    );
+  }, [db]);
+
+  useEffect(() => {
+    setHasLiked(
+      likes.findIndex((like) => like.id === session?.user.uid) !== -1
+    );
+  }, [likes]);
+
+  async function likePost() {
+    if (hasLiked) {
+      await deleteDoc(doc(db, "posts", id, "likes", session.user.uid), {
+        username: session.user.username,
+      });
+    } else {
+      await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
+        username: session.user.username,
+      });
+    }
+  }
 
   async function sendComment(event) {
     event.preventDefault();
@@ -63,7 +92,15 @@ export default function Post({ img, userImg, caption, username, id }) {
       {session && (
         <div className="flex justify-between px-4 pt-4">
           <div className="flex space-x-4">
-            <HeartIcon className="btn" />
+            {hasLiked ? (
+              <HeartIconFilled
+                onClick={likePost}
+                className="text-red-400 btn"
+              />
+            ) : (
+              <HeartIcon onClick={likePost} className="btn" />
+            )}
+
             <ChatIcon className="btn" />
           </div>
           <BookmarkIcon className="btn" />
